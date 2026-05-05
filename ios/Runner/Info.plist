@@ -15,7 +15,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>tugas_akhir_tpm</string>
+	<string>PillPal</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -66,5 +66,13 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!-- Camera permission for OCR -->
+	<key>NSCameraUsageDescription</key>
+	<string>Kamera digunakan untuk scan resep dan label obat</string>
+	<!-- Photo library permissions -->
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Akses galeri untuk memilih foto resep obat</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Akses galeri untuk menyimpan foto hasil scan</string>
 </dict>
 </plist>

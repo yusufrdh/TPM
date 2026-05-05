@@ -5,6 +5,7 @@ import 'mini_game_screen.dart';
 import 'health_articles_screen.dart';
 import 'analytics_screen.dart';
 import '../../pharmacy_map/screens/map_screen.dart';
+import '../../medications/screens/drug_info_screen.dart';
 // import 'history_screen.dart'; // Tetep di-comment biar aman
 
 class ToolsMenuScreen extends StatelessWidget {
@@ -34,26 +35,19 @@ class ToolsMenuScreen extends StatelessWidget {
             // 2. MENU MINI GAME
             _buildMenuCard(
               context,
-              title: 'Mini Game\nMed-Match',
+              title: 'Mini Game\nBasmi Virus',
               icon: Icons.sports_esports,
               color: const Color(0xFFE83E8C),
-              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => MiniGameScreen())),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const MiniGameScreen())),
             ),
             
-            // 3. MENU RIWAYAT KONSUMSI OBAT
+            // 3. MENU INFO OBAT (GANTI RIWAYAT KONSUMSI)
             _buildMenuCard(
               context,
-              title: 'Riwayat\nKonsumsi Obat',
-              icon: Icons.receipt_long,
+              title: 'Informasi\nObat',
+              icon: Icons.medication,
               color: const Color(0xFF8B5CF6),
-              onTap: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Halaman Riwayat sedang disambungin backend sama Irham...'),
-                    backgroundColor: Colors.teal,
-                  ),
-                );
-              },
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const DrugInfoScreen())),
             ),
             
             // 4. MENU ANALITIK KEPATUHAN

@@ -137,3 +137,40 @@ def get_me(current_user: User = Depends(get_current_user)):
     `Authorization: Bearer <token>`
     """
     return current_user
+
+
+# ── Check Token Validity ──────────────────────────
+@router.get(
+    "/check-token",
+    summary="Cek apakah token masih valid",
+)
+def check_token(current_user: User = Depends(get_current_user)):
+    """
+    Endpoint untuk mengecek apakah token masih valid.
+    Jika token valid, return user info.
+    Jika token expired/invalid, return 401.
+    """
+    return {
+        "status": "ok",
+        "message": "Token masih valid",
+        "user": {
+            "id": current_user.id,
+            "username": current_user.username,
+            "email": current_user.email,
+        },
+    }
+
+
+# ── Refresh Token ─────────────────────────────────
+@router.post(
+    "/refresh",
+    response_model=Token,
+    summary="Refresh JWT token",
+)
+def refresh_token(current_user: User = Depends(get_current_user)):
+    """
+    Generate token baru untuk user yang sedang login.
+    Gunakan endpoint ini jika token hampir expired.
+    """
+    access_token = create_access_token(data={"sub": current_user.username})
+    return Token(access_token=access_token)

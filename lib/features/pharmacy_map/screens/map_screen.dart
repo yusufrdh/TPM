@@ -542,7 +542,7 @@ class _MapScreenState extends State<MapScreen> {
               // Tile Layer (OpenStreetMap)
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                userAgentPackageName: 'com.example.tugas_akhir_tpm',
+                userAgentPackageName: 'com.example.PillPal',
                 maxZoom: 19,
               ),
               

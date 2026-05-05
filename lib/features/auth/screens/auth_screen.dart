@@ -256,7 +256,7 @@ class _AuthScreenState extends State<AuthScreen> {
 
                   // App Name
                   const Text(
-                    'MedRemind Pro',
+                    'PillPal',
                     style: TextStyle(
                       fontSize: 28,
                       fontWeight: FontWeight.bold,
@@ -266,7 +266,7 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Your health, expertly managed',
+                    'Aplikasi Penjaga Pola Obatmu',
                     style: TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -363,7 +363,7 @@ class _AuthScreenState extends State<AuthScreen> {
         TextField(
           controller: _loginUsernameController,
           decoration: InputDecoration(
-            hintText: 'john.doe',
+            hintText: 'Username',
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.alternate_email, color: Colors.grey.shade600),
             filled: true,
@@ -539,7 +539,7 @@ class _AuthScreenState extends State<AuthScreen> {
         TextField(
           controller: _registerFullNameController,
           decoration: InputDecoration(
-            hintText: 'John Doe',
+            hintText: 'Nama Lengkap',
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.person_outline, color: Colors.grey.shade600),
             filled: true,
@@ -567,7 +567,7 @@ class _AuthScreenState extends State<AuthScreen> {
         TextField(
           controller: _registerUsernameController,
           decoration: InputDecoration(
-            hintText: 'john.doe',
+            hintText: 'Username',
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.account_circle_outlined, color: Colors.grey.shade600),
             filled: true,
@@ -596,7 +596,7 @@ class _AuthScreenState extends State<AuthScreen> {
           controller: _registerEmailController,
           keyboardType: TextInputType.emailAddress,
           decoration: InputDecoration(
-            hintText: 'john.doe@medical.com',
+            hintText: 'email@medical.com',
             hintStyle: TextStyle(color: Colors.grey.shade400),
             prefixIcon: Icon(Icons.alternate_email, color: Colors.grey.shade600),
             filled: true,

@@ -641,7 +641,7 @@ class DatabaseHelper {
         // 1. Ambil stok saat ini
         final medResult = await txn.query(
           'medications',
-          columns: ['total_stock'],
+          columns: ['total_stock', 'name', 'drug_type'],
           where: 'id = ?',
           whereArgs: [medId],
         );
@@ -651,9 +651,21 @@ class DatabaseHelper {
         }
         
         final currentStock = medResult.first['total_stock'] as double;
+        final medName = medResult.first['name'] as String;
+        final drugType = medResult.first['drug_type'] as String?;
+        
+        print('📊 Confirm Medication: currentStock=$currentStock, dosage=$dosage');
+        
+        // VALIDASI: Cek apakah stok cukup
+        if (currentStock < dosage) {
+          final unit = drugType?.toLowerCase() == 'tablet' ? 'tablet' : 
+                       drugType?.toLowerCase() == 'kapsul' ? 'kapsul' : 'unit';
+          throw Exception('Stok tidak cukup! Tersedia: ${currentStock.toInt()} $unit, Dibutuhkan: ${dosage.toInt()} $unit. Silakan tambah stok terlebih dahulu.');
+        }
+        
         final newStock = currentStock - dosage;
         
-        print('📊 Confirm Medication: currentStock=$currentStock, dosage=$dosage, newStock=$newStock');
+        print('📊 Stock calculation: $currentStock - $dosage = $newStock');
         
         // 2. Update stok
         await txn.update(
@@ -665,17 +677,65 @@ class DatabaseHelper {
         
         print('✅ Stock updated to: ${newStock > 0 ? newStock : 0}');
         
-        // 3. Log konsumsi
+        // 3. Hitung status (on-time, late, atau missed)
+        final scheduleResult = await txn.query(
+          'schedules',
+          columns: ['time_intake'],
+          where: 'id = ?',
+          whereArgs: [scheduleId],
+        );
+        
+        String status = 'on-time'; // default
+        
+        if (scheduleResult.isNotEmpty) {
+          final timeIntake = scheduleResult.first['time_intake'] as String; // Format: "HH:mm"
+          final now = DateTime.now();
+          
+          // Parse scheduled time
+          final timeParts = timeIntake.split(':');
+          final scheduledHour = int.parse(timeParts[0]);
+          final scheduledMinute = int.parse(timeParts[1]);
+          
+          final scheduledTime = DateTime(
+            now.year,
+            now.month,
+            now.day,
+            scheduledHour,
+            scheduledMinute,
+          );
+          
+          // Hitung selisih waktu
+          final difference = now.difference(scheduledTime);
+          
+          // VALIDASI: Tidak boleh minum lebih dari 1 jam sebelum jadwal
+          if (difference.inMinutes < -60) {
+            throw Exception('Obat hanya bisa diminum maksimal 1 jam sebelum jadwal. Jadwal: $timeIntake, Sekarang: ${now.hour}:${now.minute.toString().padLeft(2, '0')}');
+          }
+          
+          // Logika status:
+          // - On-time: -60 menit sampai +30 menit dari jadwal
+          // - Late: > 30 menit setelah jadwal, tapi masih hari yang sama
+          
+          if (difference.inMinutes >= -60 && difference.inMinutes <= 30) {
+            status = 'on-time';
+            print('✅ Status: ON-TIME (difference: ${difference.inMinutes} minutes)');
+          } else if (difference.inMinutes > 30) {
+            status = 'late';
+            print('⚠️ Status: LATE (difference: ${difference.inMinutes} minutes)');
+          }
+        }
+        
+        // 4. Log konsumsi dengan status yang sudah dihitung
         await txn.insert('intake_logs', {
           'schedule_id': scheduleId,
           'timestamp': DateTime.now().toIso8601String(),
-          'status': 'on-time', // TODO: Hitung apakah late berdasarkan time_intake
+          'status': status,
           'note': null,
         });
         
-        print('✅ Intake log created');
+        print('✅ Intake log created with status: $status');
         
-        // 4. Jika stok habis atau kurang, set schedule jadi expired (JANGAN DELETE MEDICATION)
+        // 5. Jika stok habis atau kurang, set schedule jadi expired (JANGAN DELETE MEDICATION)
         if (newStock <= 0) {
           print('⚠️ Stock is 0 or less ($newStock), setting schedules to expired...');
           

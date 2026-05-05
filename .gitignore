@@ -54,3 +54,11 @@ docs/
 .kiro/skills/
 INDEX.md
 lib/test_*.dart
+
+# Ignore all .md files except README.md (case-insensitive)
+*.md
+*.MD
+!README.md
+!readme.md
+!Readme.md
+!README.MD

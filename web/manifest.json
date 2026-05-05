@@ -1,6 +1,6 @@
 {
-    "name": "tugas_akhir_tpm",
-    "short_name": "tugas_akhir_tpm",
+    "name": "PillPal",
+    "short_name": "PillPal",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

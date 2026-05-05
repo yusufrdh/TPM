@@ -1,5 +1,5 @@
 class AppStrings {
-  static const String appName = 'TPM - Tugas Akhir';
+  static const String appName = 'PillPal';
   static const String loginTitle = 'Masuk ke Sistem';
   static const String loginSubtitle = 'Gunakan kredensial untuk melanjutkan';
   

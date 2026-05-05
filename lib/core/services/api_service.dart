@@ -178,6 +178,29 @@ class ApiService {
         body: jsonEncode({'question': question}),
       );
       
+      // Check if token expired (401)
+      if (response.statusCode == 401) {
+        // Try to refresh token
+        final refreshed = await _tryRefreshToken();
+        if (refreshed) {
+          // Retry request with new token
+          final retryResponse = await http.post(
+            Uri.parse(ApiConfig.askGeminiUrl),
+            headers: _authHeaders,
+            body: jsonEncode({'question': question}),
+          );
+          
+          if (retryResponse.statusCode == 200) {
+            return jsonDecode(retryResponse.body);
+          }
+        }
+        
+        return {
+          'status': 'error',
+          'message': 'Token expired. Silakan login kembali.',
+        };
+      }
+      
       final data = jsonDecode(response.body);
       
       if (response.statusCode == 200) {
@@ -193,6 +216,38 @@ class ApiService {
       }
     } catch (e) {
       return {'status': 'error', 'message': 'Gagal menghubungi AI: $e'};
+    }
+  }
+
+  /// Try to refresh token if expired
+  Future<bool> _tryRefreshToken() async {
+    try {
+      final response = await http.post(
+        Uri.parse(ApiConfig.refreshTokenUrl),
+        headers: _authHeaders,
+      );
+      
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        await _session.setToken(data['access_token']);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Check if current token is still valid
+  Future<bool> checkToken() async {
+    try {
+      final response = await http.get(
+        Uri.parse(ApiConfig.checkTokenUrl),
+        headers: _authHeaders,
+      );
+      return response.statusCode == 200;
+    } catch (e) {
+      return false;
     }
   }
 

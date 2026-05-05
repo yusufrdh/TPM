@@ -7,12 +7,14 @@
 class ApiConfig {
   // ── Base URL ──────────────────────────────────
   // Gunakan IP WiFi Laptop agar bisa diakses dari HP fisik
-  static const String baseUrl = 'http://10.253.248.25:8000';
+  static const String baseUrl = 'http://192.168.18.14:8000';
 
   // ── Auth Endpoints ────────────────────────────
   static const String registerUrl = '$baseUrl/api/auth/register';
   static const String loginUrl = '$baseUrl/api/auth/login/json';
   static const String meUrl = '$baseUrl/api/auth/me';
+  static const String checkTokenUrl = '$baseUrl/api/auth/check-token';
+  static const String refreshTokenUrl = '$baseUrl/api/auth/refresh';
 
   // ── Service Endpoints ─────────────────────────
   static const String pingGeminiUrl = '$baseUrl/api/services/ping-gemini';

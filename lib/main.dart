@@ -127,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 20),
               const Text(
-                'MedRemind Pro',
+                'PillPal',
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
@@ -137,7 +137,7 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               const SizedBox(height: 10),
               const Text(
-                'Asisten Kesehatan Pintar Anda',
+                'Aplikasi Penjaga Pola Obatmu',
                 style: TextStyle(
                   color: Colors.white70,
                   fontSize: 14,

@@ -1,4 +1,4 @@
-package com.example.tugas_akhir_tpm
+package com.example.PillPal
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 

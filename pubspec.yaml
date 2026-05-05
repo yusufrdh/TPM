@@ -1,4 +1,4 @@
-name: tugas_akhir_tpm
+name: PillPal
 description: Aplikasi manajemen pengobatan dengan fitur AI dan Sensor.
 publish_to: 'none'
 version: 1.0.0+1
@@ -29,6 +29,13 @@ dependencies:
   local_auth_ios: ^1.1.5
   shared_preferences: ^2.2.0  # Persistent storage
   flutter_secure_storage: ^9.0.0  # Secure storage for credentials
+  
+  # OCR & Image Processing
+  google_mlkit_text_recognition: ^0.11.0  # Google ML Kit for OCR
+  image_picker: ^1.0.4  # Pick images from camera/gallery
+  
+  # Markdown Rendering
+  flutter_markdown: ^0.7.4+1  # Render markdown text in chat
 
 dev_dependencies:
   flutter_test:
