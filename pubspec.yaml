@@ -23,9 +23,12 @@ dependencies:
   sensors_plus: ^4.0.0
   flutter_map: ^6.1.0
   latlong2: ^0.9.0
-  local_auth: ^2.1.7
+  fl_chart: ^0.66.0  # Charts for analytics
+  local_auth: ^2.1.7  # Biometric authentication (use upstream version)
   local_auth_android: ^1.0.34
   local_auth_ios: ^1.1.5
+  shared_preferences: ^2.2.0  # Persistent storage
+  flutter_secure_storage: ^9.0.0  # Secure storage for credentials
 
 dev_dependencies:
   flutter_test:

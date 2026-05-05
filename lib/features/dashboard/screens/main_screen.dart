@@ -75,9 +75,10 @@ class _MainScreenState extends State<MainScreen> {
           ),
           IconButton(
             icon: const Icon(Icons.logout), 
-            onPressed: () {
-              ApiService().logout();
-              Navigator.pushReplacementNamed(context, '/');
+            onPressed: () async {
+              await ApiService().logout();
+              if (!context.mounted) return;
+              Navigator.pushReplacementNamed(context, '/auth');
             }
           ),
         ],

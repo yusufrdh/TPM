@@ -7,7 +7,7 @@
 class ApiConfig {
   // ── Base URL ──────────────────────────────────
   // Gunakan IP WiFi Laptop agar bisa diakses dari HP fisik
-  static const String baseUrl = 'http://192.168.18.14:8000';
+  static const String baseUrl = 'http://10.253.248.25:8000';
 
   // ── Auth Endpoints ────────────────────────────
   static const String registerUrl = '$baseUrl/api/auth/register';

@@ -84,7 +84,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         // Simpan token
-        _session.setToken(data['access_token']);
+        await _session.setToken(data['access_token']);
 
         // Langsung fetch profil user
         await fetchMyProfile();
@@ -108,7 +108,7 @@ class ApiService {
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
-        _session.setUser(data);
+        await _session.setUser(data);
         return {'success': true, 'data': data};
       } else {
         return {'success': false, 'message': 'Gagal mengambil profil'};
@@ -267,7 +267,7 @@ class ApiService {
   // LOGOUT
   // ════════════════════════════════════════════════
 
-  void logout() {
-    _session.clear();
+  Future<void> logout() async {
+    await _session.clear();
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../core/services/api_service.dart';
+import '../../../core/services/biometric_service.dart';
+import '../../../core/services/session_manager.dart';
+import '../../../data/local/database_helper.dart';
 import 'forgot_password_screen.dart';
 
 class AuthScreen extends StatefulWidget {
@@ -13,6 +16,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLoginMode = true; // Toggle antara Login dan Register
   bool _isObscure = true;
   bool _isLoading = false;
+  bool _showBiometricButton = false;
 
   // Controllers untuk Login
   final TextEditingController _loginUsernameController = TextEditingController();
@@ -25,6 +29,91 @@ class _AuthScreenState extends State<AuthScreen> {
   final TextEditingController _registerPasswordController = TextEditingController();
 
   final ApiService _apiService = ApiService();
+  final BiometricService _biometricService = BiometricService();
+  final SessionManager _session = SessionManager();
+  final DatabaseHelper _dbHelper = DatabaseHelper();
+
+  @override
+  void initState() {
+    super.initState();
+    _checkBiometricLogin();
+  }
+
+  Future<void> _checkBiometricLogin() async {
+    // Load session first (in case app just started)
+    await _session.loadSession();
+    
+    // Check if there's a logged in user with biometric enabled
+    // Gunakan last user ID jika session sudah di-clear (setelah logout)
+    int? userId = _session.userId;
+    if (userId == null) {
+      userId = await _session.getLastUserId();
+    }
+    
+    if (userId == null) {
+      setState(() => _showBiometricButton = false);
+      print('🔐 No user ID found, hiding biometric button');
+      return;
+    }
+
+    final isBiometricEnabled = await _dbHelper.isBiometricEnabled(userId);
+    final isBiometricAvailable = await _biometricService.isBiometricAvailable();
+    
+    setState(() {
+      _showBiometricButton = isBiometricEnabled && isBiometricAvailable;
+    });
+    
+    print('🔐 Biometric login available: $_showBiometricButton (userId: $userId, enabled: $isBiometricEnabled, available: $isBiometricAvailable)');
+  }
+
+  Future<void> _handleBiometricLogin() async {
+    // Gunakan last user ID jika session sudah di-clear
+    int? userId = _session.userId;
+    if (userId == null) {
+      userId = await _session.getLastUserId();
+    }
+    
+    if (userId == null) {
+      _showSnackBar('Tidak ada user yang tersimpan', isError: true);
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    // Authenticate dengan biometric
+    final authenticated = await _biometricService.authenticateForLogin();
+    
+    if (authenticated) {
+      // Biometric authentication successful
+      // Load saved credentials
+      final credentials = await _session.getSavedCredentials();
+      
+      if (credentials == null) {
+        if (!mounted) return;
+        _showSnackBar('Credentials tidak ditemukan. Silakan login dengan username & password.', isError: true);
+        setState(() => _isLoading = false);
+        return;
+      }
+      
+      // Login dengan saved credentials
+      final result = await _apiService.login(
+        username: credentials['username']!,
+        password: credentials['password']!,
+      );
+      
+      if (result['success'] == true) {
+        if (!mounted) return;
+        _showSnackBar('Login berhasil! Selamat datang ${_session.userName} 👋');
+        Navigator.pushReplacementNamed(context, '/home');
+      } else {
+        _showSnackBar(result['message'] ?? 'Login gagal', isError: true);
+      }
+    } else {
+      _showSnackBar('Autentikasi sidik jari gagal', isError: true);
+    }
+
+    setState(() => _isLoading = false);
+  }
 
   // Handle Login
   Future<void> _handleLogin() async {
@@ -46,6 +135,9 @@ class _AuthScreenState extends State<AuthScreen> {
     setState(() => _isLoading = false);
 
     if (result['success'] == true) {
+      // Save credentials untuk biometric login
+      await _session.saveCredentials(username, password);
+      
       if (!mounted) return;
       _showSnackBar('Login berhasil! Selamat datang 👋');
       Navigator.pushReplacementNamed(context, '/home');
@@ -383,27 +475,47 @@ class _AuthScreenState extends State<AuthScreen> {
         ),
         const SizedBox(height: 30),
 
-        // Quick Access
-        const Center(
-          child: Text(
-            'QUICK ACCESS',
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: Colors.grey,
-              letterSpacing: 1,
+        // Quick Access - Hanya tampilkan jika biometric enabled
+        if (_showBiometricButton) ...[
+          const Center(
+            child: Text(
+              'QUICK ACCESS',
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                color: Colors.grey,
+                letterSpacing: 1,
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 15),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _buildQuickAccessButton(Icons.fingerprint),
-            const SizedBox(width: 20),
-            _buildQuickAccessButton(Icons.face),
-          ],
-        ),
+          const SizedBox(height: 15),
+          Center(
+            child: GestureDetector(
+              onTap: _isLoading ? null : _handleBiometricLogin,
+              child: Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: Colors.teal.shade600, width: 2),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.teal.withValues(alpha: 0.2),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Icon(
+                  Icons.fingerprint,
+                  size: 32,
+                  color: Colors.teal.shade600,
+                ),
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
@@ -574,24 +686,6 @@ class _AuthScreenState extends State<AuthScreen> {
           ),
         ),
       ],
-    );
-  }
-
-  // Quick Access Button (Fingerprint / Face Recognition)
-  Widget _buildQuickAccessButton(IconData icon) {
-    return Container(
-      width: 60,
-      height: 60,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.grey.shade300, width: 2),
-      ),
-      child: Icon(
-        icon,
-        size: 30,
-        color: Colors.grey.shade600,
-      ),
     );
   }
 

@@ -2,6 +2,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:typed_data'; // For Int64List (vibration pattern)
 import 'shake_detector.dart';
 import '../../data/local/database_helper.dart';
 
@@ -199,6 +200,7 @@ class NotificationService {
         priority: Priority.high,
         showWhen: true,
         enableVibration: true,
+        vibrationPattern: Int64List.fromList([0, 500, 250, 500]), // Vibrate pattern: wait-vibrate-pause-vibrate
         playSound: true,
         icon: '@mipmap/ic_launcher',
         // Add notification actions (Snooze & Sudah Minum)
@@ -307,6 +309,7 @@ class NotificationService {
         priority: Priority.high,
         showWhen: true,
         enableVibration: true,
+        vibrationPattern: Int64List.fromList([0, 500, 250, 500]), // Vibrate pattern
         playSound: true,
         icon: '@mipmap/ic_launcher',
         actions: const [

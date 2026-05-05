@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'conversion_screen.dart';
 import 'mini_game_screen.dart';
 import 'health_articles_screen.dart';
+import 'analytics_screen.dart';
 import '../../pharmacy_map/screens/map_screen.dart';
 // import 'history_screen.dart'; // Tetep di-comment biar aman
 
@@ -55,7 +56,16 @@ class ToolsMenuScreen extends StatelessWidget {
               },
             ),
             
-            // 4. MENU TIPS KESEHATAN
+            // 4. MENU ANALITIK KEPATUHAN
+            _buildMenuCard(
+              context,
+              title: 'Analitik\nKepatuhan',
+              icon: Icons.analytics,
+              color: const Color(0xFF3B82F6),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const AnalyticsScreen())),
+            ),
+            
+            // 5. MENU TIPS KESEHATAN
             _buildMenuCard(
               context,
               title: 'Tips\nKesehatan',
@@ -64,7 +74,7 @@ class ToolsMenuScreen extends StatelessWidget {
               onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => HealthArticlesScreen())),
             ),
             
-            // 5. MENU PETA APOTEK
+            // 6. MENU PETA APOTEK
             _buildMenuCard(
               context,
               title: 'Peta\nApotek',
